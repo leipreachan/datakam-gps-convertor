@@ -22,6 +22,7 @@ def convert_to_gpx(log_file):
     gpx = gpxpy.gpx.GPX()
 
     gpx_track = gpxpy.gpx.GPXTrack()
+    gpx_track.name = log_file
     gpx.tracks.append(gpx_track)
 
     gpx_segment = gpxpy.gpx.GPXTrackSegment()
@@ -31,9 +32,13 @@ def convert_to_gpx(log_file):
         if len(v) > 1:
             lat = v[1][1:]
             lon = v[2][1:]
-            elev = v[3]
-            t = datetime.strptime(v[0], "%Y-%m-%d %H:%M:%S")
-            gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon, elevation=elev, time=t))
+            elevation = v[3]
+            date_time = datetime.strptime(v[0], "%Y-%m-%d %H:%M:%S")
+            current_speed = v[4]
+            magnetic_variation = v[5]
+            point = gpxpy.gpx.GPXTrackPoint(lat, lon, elevation=elevation, time=date_time, speed=current_speed)
+            point.magnetic_variation = magnetic_variation
+            gpx_segment.points.append(point)
 
     result = gpx.to_xml()
 
