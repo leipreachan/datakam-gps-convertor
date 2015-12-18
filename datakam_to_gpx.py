@@ -1,30 +1,37 @@
 #!/usr/bin/python
+from datetime import datetime
+import gpxpy
+import gpxpy.gpx
 
-from xml import etree
-import xml.etree.cElementTree as ET
+log_file = '2015-09-03.log'
+gpx_file = log_file + '.gpx'
 
-filename = '2015-09-03.log'
-
-with open(filename) as f:
-	content = f.read().splitlines()
+with open(log_file) as f:
+    content = f.read().splitlines()
 
 for i, var in enumerate(content):
-	content[i] = var.split('\t')
-	
-root = ET.Element('gpx')
-trk = ET.SubElement(root, 'trk')
+    content[i] = var.split('\t')
 
-name = ET.SubElement(trk, 'name')
-name.text = "datakam track " + filename
+gpx = gpxpy.gpx.GPX()
+
+gpx_track = gpxpy.gpx.GPXTrack()
+gpx.tracks.append(gpx_track)
+
+gpx_segment = gpxpy.gpx.GPXTrackSegment()
+gpx_track.segments.append(gpx_segment)
+
+# name.text = "datakam track " + filename
 
 for i, v in enumerate(content):
-	if len(v) > 1:
-		pt = ET.SubElement(trk, 'wpt')
-		pt.set('lat', v[1])
-		pt.set('lon', v[2])
-		ET.SubElement(pt, 'time').text = v[0]
-		ET.SubElement(pt, 'ele').text= v[3]
+    if len(v) > 1:
+        lat = v[1][1:]
+        lon = v[2][1:]
+        elev = v[3]
+        t = datetime.strptime(v[0], "%Y-%m-%d %H:%M:%S")
+        gpx_segment.points.append(gpxpy.gpx.GPXTrackPoint(lat, lon, elevation=elev, time=t))
 
+result = gpx.to_xml()
 
-tree = ET.ElementTree(root)
-tree.write(filename + '.gpx')
+result_file = open(gpx_file, 'w')
+result_file.write(result)
+result_file.close()
