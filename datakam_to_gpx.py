@@ -1,12 +1,18 @@
 #!/usr/bin/python
 from datetime import datetime
+import os.path
 import gpxpy
 import gpxpy.gpx
 import sys
 
 
 def convert_to_gpx(log_file):
+    print log_file + ' converting ...'
     gpx_file = log_file + '.gpx'
+    if os.path.isfile(gpx_file):
+        print gpx_file + ' file exist, skip converting'
+        return
+
     with open(log_file) as f:
         content = f.read().splitlines()
 
@@ -21,8 +27,6 @@ def convert_to_gpx(log_file):
     gpx_segment = gpxpy.gpx.GPXTrackSegment()
     gpx_track.segments.append(gpx_segment)
 
-    # name.text = "datakam track " + filename
-
     for i, v in enumerate(content):
         if len(v) > 1:
             lat = v[1][1:]
@@ -36,6 +40,7 @@ def convert_to_gpx(log_file):
     result_file = open(gpx_file, 'w')
     result_file.write(result)
     result_file.close()
+    print log_file + ' - done'
 
 for i, v in enumerate(sys.argv):
     if i > 0:
