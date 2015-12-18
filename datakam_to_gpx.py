@@ -4,6 +4,7 @@ import gpxpy
 import gpxpy.gpx
 import sys
 
+
 def convert_to_gpx(log_file):
     gpx_file = log_file + '.gpx'
     with open(log_file) as f:
@@ -36,6 +37,6 @@ def convert_to_gpx(log_file):
     result_file.write(result)
     result_file.close()
 
-for i, v in sys.argv:
-    if i>1:
+for i, v in enumerate(sys.argv):
+    if i > 0:
         convert_to_gpx(v)
