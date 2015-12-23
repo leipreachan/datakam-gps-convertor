@@ -1,15 +1,16 @@
 #!/usr/bin/python
 from datetime import datetime
-import os.path
+import os
 import gpxpy
 import gpxpy.gpx
 import sys
 
 
-def convert_to_gpx(log_file):
+def convert_to_gpx(log_file, force=False):
+    tz_offset = 3 * 60 * 60
     print log_file + ' converting ...'
     gpx_file = log_file + '.gpx'
-    if os.path.isfile(gpx_file):
+    if force == False and os.path.isfile(gpx_file):
         print gpx_file + ' file exist, skip converting'
         return
 
@@ -22,7 +23,8 @@ def convert_to_gpx(log_file):
     gpx = gpxpy.gpx.GPX()
 
     gpx_track = gpxpy.gpx.GPXTrack()
-    gpx_track.name = log_file
+    fileName = os.path.basename(log_file)
+    gpx_track.name = fileName
     gpx.tracks.append(gpx_track)
 
     gpx_segment = gpxpy.gpx.GPXTrackSegment()
@@ -34,6 +36,7 @@ def convert_to_gpx(log_file):
             lon = v[2][1:]
             elevation = v[3]
             date_time = datetime.strptime(v[0], "%Y-%m-%d %H:%M:%S")
+            # date_time.tz
             current_speed = v[4]
             magnetic_variation = v[5]
             point = gpxpy.gpx.GPXTrackPoint(lat, lon, elevation=elevation, time=date_time, speed=current_speed)
@@ -47,6 +50,11 @@ def convert_to_gpx(log_file):
     result_file.close()
     print log_file + ' - done'
 
+
+force = False
 for i, v in enumerate(sys.argv):
     if i > 0:
-        convert_to_gpx(v)
+        if i == 1 and v == '-f':
+            force = True
+        else:
+            convert_to_gpx(v, force=force)
