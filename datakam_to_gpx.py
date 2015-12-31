@@ -3,6 +3,7 @@ from datetime import datetime
 import os
 import sys
 
+import pytz
 import gpxpy
 import gpxpy.gpx
 
@@ -12,7 +13,10 @@ def get_date_time(datakam_date):
 
     :rtype : datetime
     """
-    result = datetime.strptime(datakam_date, '%Y-%m-%d %H:%M:%S')
+    default_timezone = 'Europe/Moscow'
+
+    unaware = datetime.strptime(datakam_date, '%Y-%m-%d %H:%M:%S')
+    result = pytz.timezone(default_timezone).localize(unaware)
     return result
 
 
@@ -69,6 +73,7 @@ def convert_to_gpx(log_file, force=False):
     result_file.write(result)
     result_file.close()
     print log_file + ' - done'
+
 
 for i, v in enumerate(sys.argv):
     if i > 0:
