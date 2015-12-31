@@ -75,6 +75,11 @@ def convert_to_gpx(log_file, force=False):
     print log_file + ' - done'
 
 
+
+force = False
 for i, v in enumerate(sys.argv):
     if i > 0:
-        convert_to_gpx(v)
+        if i == 1 and v == '-f':
+            force = True
+        else:
+            convert_to_gpx(v, force=force)
